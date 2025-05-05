@@ -4,6 +4,7 @@ import requests
 import inspect
 import pandas as pd
 from dotenv import load_dotenv
+from agent import build_graph
 
 # Cargar variables de entorno desde .env
 load_dotenv()
@@ -26,168 +27,16 @@ DEFAULT_API_URL = "https://agents-course-unit4-scoring.hf.space"
 from transformers import pipeline
 
 class BasicAgent:
+    """Basic Agent that uses Llama3."""
     def __init__(self):
-        print("Loading model...")
-        self.pipeline = pipeline("text2text-generation", model="google/flan-t5-xl", max_new_tokens=300)
-        print("Model loaded.")
+        print("BasicAgent initialized.")
+        self.agent = build_graph()
 
     def __call__(self, question: str) -> str:
         print(f"\n\n===== NUEVA PREGUNTA =====")
-        print(f"Pregunta completa: {question}")
-        
-        # Las dos respuestas que sabemos que son correctas
-        if ".rewsna eht sa" in question or "ecnetnes siht dnatsrednu" in question:
-            print("DETECTADA: Pregunta en texto invertido")
-            answer = "right"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        elif "Malko Competition recipient" in question:
-            print("DETECTADA: Pregunta sobre Malko Competition")
-            answer = "Yuri"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para la pregunta de vegetales, probamos otra respuesta
-        if "grocery list" in question and "vegetables" in question and "botany" in question:
-            print("DETECTADA: Pregunta sobre vegetales")
-            answer = "broccoli, celery, lettuce, sweet potatoes, zucchini"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para la pregunta de Olimpiadas, probamos otro código
-        elif "least number of athletes at the 1928 Summer Olympics" in question:
-            print("DETECTADA: Pregunta sobre Olimpiadas 1928")
-            answer = "AFG"  # Afganistán
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-            
-        # Para la pregunta de lanzadores, probamos otros nombres
-        elif "pitchers with the number before and after Taishō Tamai" in question:
-            print("DETECTADA: Pregunta sobre lanzadores")
-            answer = "Yamamoto, Ito"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-            
-        # Para la pregunta de ventas, probamos otro valor
-        elif "Excel file contains the sales" in question:
-            print("DETECTADA: Pregunta sobre ventas Excel")
-            answer = "53.40"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-            
-        # Para Mercedes Sosa, probamos otro número
-        elif "How many studio albums were published by Mercedes Sosa" in question:
-            print("DETECTADA: Pregunta sobre Mercedes Sosa")
-            answer = "3"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-            
-        # Para pájaros en YouTube, probamos otra respuesta
-        elif "highest number of bird species" in question and "youtube" in question:
-            print("DETECTADA: Pregunta sobre video de pájaros")
-            answer = "four"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-            
-        # Para la posición de ajedrez, probamos otra notación
-        elif "chess position" in question or "algebraic notation" in question:
-            print("DETECTADA: Pregunta sobre ajedrez")
-            answer = "Qe4"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para el artículo de Wikipedia
-        elif "nominated the only Featured Article" in question:
-            print("DETECTADA: Pregunta sobre artículo de Wikipedia")
-            answer = "Cassandra"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para la tabla matemática
-        elif "table defining * on the set" in question:
-            print("DETECTADA: Pregunta sobre tabla matemática")
-            answer = "b, c, d, e"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para la respuesta de Teal'c
-        elif "Teal'c say in response" in question:
-            print("DETECTADA: Pregunta sobre video")
-            answer = "Extremely"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para el veterinario equino
-        elif "surname of the equine veterinarian" in question:
-            print("DETECTADA: Pregunta sobre veterinario")
-            answer = "Johnson"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para el pie
-        elif "making a pie" in question:
-            print("DETECTADA: Pregunta sobre pie")
-            answer = "butter, cornstarch, lemon juice, strawberries, sugar"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para el actor polaco
-        elif "actor who played Ray in the Polish-language version" in question:
-            print("DETECTADA: Pregunta sobre actor polaco")
-            answer = "Andrzej"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para el código Python
-        elif "final numeric output from the attached Python code" in question:
-            print("DETECTADA: Pregunta sobre código Python")
-            answer = "120"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para el Yankee con más walks
-        elif "Yankee with the most walks in the 1977" in question:
-            print("DETECTADA: Pregunta sobre béisbol")
-            answer = "527"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para las clases perdidas
-        elif "out sick from my classes" in question:
-            print("DETECTADA: Pregunta sobre clases")
-            answer = "42, 56, 78, 91"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para el artículo de astronomía
-        elif "article by Carolyn Collins Petersen" in question:
-            print("DETECTADA: Pregunta sobre artículo")
-            answer = "NAS5-26555"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Para los especímenes
-        elif "Vietnamese specimens described by Kuznetzov" in question:
-            print("DETECTADA: Pregunta sobre especímenes")
-            answer = "Moscow"
-            print(f"Respuesta hardcodeada: {answer}")
-            return answer
-        
-        # Si no detectamos ninguna pregunta específica, usamos el modelo
-        else:
-            print("No se detectó ninguna pregunta específica, usando modelo")
-            prompt = f"Answer the following question with a direct, concise response. No explanations needed:\n\n{question.strip()}"
-            
-            try:
-                print(f"Usando prompt: {prompt}")
-                result = self.pipeline(prompt)
-                answer = result[0]["generated_text"].strip()
-                print(f"Respuesta generada: {answer}")
-                return answer
-            except Exception as e:
-                print(f"Error durante la inferencia: {e}")
-                return "error"
+        print(f"Pregunta completa: {question[:50]}...")
+        answer = self.agent.process_question(question)
+        return answer
 
 
 def run_and_submit_all( profile: gr.OAuthProfile | None):
